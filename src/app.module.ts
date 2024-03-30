@@ -1,17 +1,26 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { existsSync, mkdirSync } from 'fs';
 import * as path from 'path';
+import { HotelReservationModule } from './hotel-reservation/hotel-reservation.module';
+import { MongooseModule } from '@nestjs/mongoose';
 @Module({
   imports: [
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        uri: config.get<string>('HOTEL_RESERVATION_DATABASE_URL'),
+      }),
+    }),
     ConfigModule.forRoot({
       envFilePath: ['.env'],
       isGlobal: true,
       expandVariables: true,
     }),
-    // HotelReservationMicroserviceModule,
+    HotelReservationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
