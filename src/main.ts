@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
 import { HotelReservationMsLogger } from './common/logger.interceptor';
+import * as http from 'http';
 
 async function bootstrap() {
   const logger = new Logger('HotelReservationMicroservice');
@@ -21,6 +22,15 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new HotelReservationMsLogger());
+
+  // /* This is because Render requires http port binding for deployment */
+  const server = http.createServer((req, res) => {
+    res.statusCode = 200;
+    res.end('This is a placeholder HTTP response');
+  });
+
+  server.listen(5003);
+
   await app
     .listen()
     .finally(() =>
