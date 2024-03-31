@@ -18,4 +18,11 @@ export class HotelReservationController {
       createReservationDto,
     );
   }
+
+  @MessagePattern({ cmd: SubscriberPattern.RETRIEVE_RESERVATION })
+  async retrieveReservation(@Payload() reservationId: string): Promise<any> {
+    return await this.hotelReservationService.retrieveReservation(
+      reservationId,
+    );
+  }
 }

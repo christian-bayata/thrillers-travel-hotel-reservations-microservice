@@ -15,7 +15,7 @@ export class HotelReservationService {
   private readonly ISE: string = 'Internal Server Error';
 
   /**
-   * @Responsibility: flight booking service method to create a new hotel reservation
+   * @Responsibility: hotel reservation service method to create a new hotel reservation
    *
    * @param createReservationDto
    * @returns {Promise<any>}
@@ -41,6 +41,39 @@ export class HotelReservationService {
       return await this.hotelReservationRepository.createHotelReservation(
         createReservationDto,
       );
+    } catch (error) {
+      throw new RpcException(
+        this.errR({
+          message: error?.message ? error.message : this.ISE,
+          status: error?.error?.status,
+        }),
+      );
+    }
+  }
+
+  /**
+   * @Responsibility: hotel reservation service method to retrieve a single hotel reservation
+   *
+   * @param reservationId
+   * @returns {Promise<any>}
+   */
+
+  async retrieveReservation(reservationId: string): Promise<any> {
+    try {
+      const theReservation =
+        await this.hotelReservationRepository.findHotelReservation({
+          _id: reservationId,
+        });
+      if (!theReservation) {
+        throw new RpcException(
+          this.errR({
+            message: 'reservation not found',
+            status: HttpStatus.NOT_FOUND,
+          }),
+        );
+      }
+
+      return theReservation;
     } catch (error) {
       throw new RpcException(
         this.errR({
